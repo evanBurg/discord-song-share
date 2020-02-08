@@ -3,6 +3,7 @@ const http = require("http");
 const url = require("url");
 const querystring = require("querystring");
 const path = require("path");
+const fs = require("fs");
 
 //Variables
 const WEBHOOK_URL =
@@ -140,11 +141,11 @@ const handleRequest = async (request, response) => {
           "Error: You must attach a song to share! ( ?song= )"
         );
       }
+    } else {
+      //Send index
+      response.writeHead(200);
+      fs.createReadStream(path.resolve("./index.html")).pipe(response);
     }
-  } else {
-    //Send index
-    response.writeHead(200);
-    fs.createReadStream(path.resolve("./front/index.html")).pipe(response);
   }
 };
 
