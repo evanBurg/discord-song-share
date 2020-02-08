@@ -4,10 +4,10 @@ const url = require("url");
 const querystring = require("querystring");
 
 //Variables
-const WEBHOOK_URL ="https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const SONGLINK_URL = `https://api.song.link/v1-alpha.1`;
-const USERNAME = "Music Man";
-const AVATAR = "https://i.imgur.com/I9xBxse.jpg";
+const WEBHOOK_URL = process.env.WEBHOOK_URL || "https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const SONGLINK_URL = process.env.SONGLINK_URL || `https://api.song.link/v1-alpha.1`;
+const USERNAME = process.env.USERNAME || "Music Man";
+const AVATAR = process.env.AVATAR || "https://i.imgur.com/I9xBxse.jpg";
 
 //Webhook body
 const generateMessage = async song_link => {
