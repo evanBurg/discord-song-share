@@ -109,12 +109,9 @@
   </style>
   <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
     integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous" />
-  <link rel="stylesheet" href="style.css" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <link rel="stylesheet" href="/css/fontawesome/css/all.min.css" type="text/css" />
-  <link rel="stylesheet" href="/css/bootstrap/css/bootstrap.min.css" type="text/css" />
   <link rel="icon" type="image/png" href="https://i.imgur.com/I9xBxse.jpg" />
   <title>Discord Song Share</title>
 </head>
@@ -125,8 +122,8 @@
       <h1 class="title">Discord Song Share</h1>
       <form class="pure-form" action="/" method="GET">
         <fieldset class="pure-group">
-          <input type="text" class="pure-input-rounded" placeholder="Song Link" />
-          <input type="text" class="pure-input-rounded" placeholder="Your Name (Optional)" />
+          <input name="song" type="text" class="pure-input-rounded" placeholder="Song Link" />
+          <input name="user" type="text" class="pure-input-rounded" placeholder="Your Name (Optional)" />
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary">
           Share!
