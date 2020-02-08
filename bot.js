@@ -2,17 +2,23 @@ const fetch = require("node-fetch");
 const http = require("http");
 const url = require("url");
 const querystring = require("querystring");
+const path = require("path");
 
 //Variables
-const WEBHOOK_URL = process.env.WEBHOOK_URL || "https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const SONGLINK_URL = process.env.SONGLINK_URL || `https://api.song.link/v1-alpha.1`;
+const WEBHOOK_URL =
+  process.env.WEBHOOK_URL ||
+  "https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const SONGLINK_URL =
+  process.env.SONGLINK_URL || `https://api.song.link/v1-alpha.1`;
 const USERNAME = process.env.USERNAME || "Music Man";
 const AVATAR = process.env.AVATAR || "https://i.imgur.com/I9xBxse.jpg";
 
 //Webhook body
 const generateMessage = async song_link => {
   //Get Song details
-  const response = await fetch(`${SONGLINK_URL}/links?url=${song_link}&userCountry=US`);
+  const response = await fetch(
+    `${SONGLINK_URL}/links?url=${song_link}&userCountry=US`
+  );
 
   //Cancel if not found
   if (!response.ok) return false;
@@ -39,7 +45,10 @@ const generateMessage = async song_link => {
         height: entry.thumbnailHeight,
         width: entry.thumbnailWidth
       };
-    } else if ( entry.thumbnailWidth > thumbnail.width || entry.thumbnailHeight > thumbnail.height ) {
+    } else if (
+      entry.thumbnailWidth > thumbnail.width ||
+      entry.thumbnailHeight > thumbnail.height
+    ) {
       title = `${entry.title} by ${entry.artistName}`;
       thumbnail = {
         url: entry.thumbnailUrl,
@@ -69,8 +78,8 @@ const generateMessage = async song_link => {
             inline: true
           },
           {
-            name:"\u0000",
-            value:"\u0000"
+            name: "\u0000",
+            value: "\u0000"
           },
           {
             name: "Apple Music",
@@ -98,34 +107,44 @@ const fail = (response, status, error) => {
 
 const handleRequest = async (request, response) => {
   if (request.method === "GET") {
-    const parsed = url.parse(request.url);
-    const query = querystring.parse(parsed.query);
+    if (request.url.includes("?song=")) {
+      const parsed = url.parse(request.url);
+      const query = querystring.parse(parsed.query);
 
-    if (query.song) {
-      try {
-        let message = await generateMessage(query.song);
-        let discord = await fetch(WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(message)
-        });
-        if (!discord.ok) {
-          let error = discord.statusText;
-          let body = await discord.text();
-          return fail(response, 500, `Error: Couldn't share song... ( ${error} )\n\n${body}`);
+      if (query.song) {
+        try {
+          let message = await generateMessage(query.song);
+          let discord = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(message)
+          });
+          if (!discord.ok) {
+            let error = discord.statusText;
+            let body = await discord.text();
+            return fail(
+              response,
+              500,
+              `Error: Couldn't share song... ( ${error} )\n\n${body}`
+            );
+          }
+          response.writeHead(200, { "Content-Type": "text/plain" });
+          response.end("Song shared!");
+        } catch (e) {
+          return fail(response, 400, `Error: Couldn't share song... ( ${e} )`);
         }
-        response.writeHead(200, { "Content-Type": "text/plain" });
-        response.end("Song shared!");
-      } catch (e) {
-        return fail(response, 400, `Error: Couldn't share song... ( ${e} )`);
+      } else {
+        return fail(
+          response,
+          400,
+          "Error: You must attach a song to share! ( ?song= )"
+        );
       }
-    } else {
-      return fail(
-        response,
-        400,
-        "Error: You must attach a song to share! ( ?song= )"
-      );
     }
+  } else {
+    //Send index
+    response.writeHead(200);
+    fs.createReadStream(path.resolve("./front/index.html")).pipe(response);
   }
 };
 
