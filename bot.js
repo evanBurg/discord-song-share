@@ -15,7 +15,7 @@ const USERNAME = process.env.USERNAME || "Music Man";
 const AVATAR = process.env.AVATAR || "https://i.imgur.com/I9xBxse.jpg";
 
 //Webhook body
-const generateMessage = async song_link => {
+const generateMessage = async (song_link, requestee) => {
   //Get Song details
   const response = await fetch(
     `${SONGLINK_URL}/links?url=${song_link}&userCountry=US`
@@ -62,9 +62,13 @@ const generateMessage = async song_link => {
   return {
     username: USERNAME,
     avatar_url: AVATAR,
-    content: "New song shared!",
+    content: `${requestee} shared a new song!`,
     embeds: [
       {
+        author: {
+          name: `Shared by ${requestee}`,
+          icon_url: "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"
+        },
         title: title,
         url: pageUrl,
         fields: [
@@ -112,7 +116,7 @@ const shareSong = async (request, response) => {
 
   if (query.song) {
     try {
-      let message = await generateMessage(query.song);
+      let message = await generateMessage(query.song, query.user);
       let discord = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
