@@ -106,46 +106,54 @@ const fail = (response, status, error) => {
   response.end(error);
 };
 
+const shareSong = async (request, response) => {
+  const parsed = url.parse(request.url);
+  const query = querystring.parse(parsed.query);
+
+  if (query.song) {
+    try {
+      let message = await generateMessage(query.song);
+      let discord = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(message)
+      });
+      if (!discord.ok) {
+        let error = discord.statusText;
+        let body = await discord.text();
+        return fail(
+          response,
+          500,
+          `Error: Couldn't share song... ( ${error} )\n\n${body}`
+        );
+      }
+      response.writeHead(200, { "Content-Type": "text/plain" });
+      response.end("Song shared!");
+    } catch (e) {
+      return fail(response, 400, `Error: Couldn't share song... ( ${e} )`);
+    }
+  } else {
+    return fail(
+      response,
+      400,
+      "Error: You must attach a song to share! ( ?song= )"
+    );
+  }
+};
+
 const handleRequest = async (request, response) => {
   if (request.method === "GET") {
     if (request.url.includes("?song=")) {
-      const parsed = url.parse(request.url);
-      const query = querystring.parse(parsed.query);
-
-      if (query.song) {
-        try {
-          let message = await generateMessage(query.song);
-          let discord = await fetch(WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(message)
-          });
-          if (!discord.ok) {
-            let error = discord.statusText;
-            let body = await discord.text();
-            return fail(
-              response,
-              500,
-              `Error: Couldn't share song... ( ${error} )\n\n${body}`
-            );
-          }
-          response.writeHead(200, { "Content-Type": "text/plain" });
-          response.end("Song shared!");
-        } catch (e) {
-          return fail(response, 400, `Error: Couldn't share song... ( ${e} )`);
-        }
-      } else {
-        return fail(
-          response,
-          400,
-          "Error: You must attach a song to share! ( ?song= )"
-        );
-      }
+      shareSong(request, response);
     } else {
       //Send index
       response.writeHead(200);
       fs.createReadStream(path.resolve("./index.html")).pipe(response);
     }
+  }
+
+  if (request.method === "POST") {
+    shareSong(request, response);
   }
 };
 
