@@ -131,11 +131,11 @@ const succeed = (response, message) => {
   fs.createReadStream(path.resolve("./views/success.html")).pipe(response);
 };
 
-const shareSong = async (song, user, request, response) => {
+const shareSong = async (song, user, request, response, headers) => {
   if (song) {
     try {
       let message = await generateMessage(song, user);
-      if (!query.headers) {
+      if (!headers) {
         let discord = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -180,20 +180,16 @@ const handleRequest = async (request, response) => {
 
       console.log(url);
 
-     return shareSong(url, undefined, request, response);
+     return shareSong(url, undefined, request, response, false);
     }
 
     if (request.url.includes("?song=")) {
-      shareSong(query.song, query.user, request, response);
+      return shareSong(query.song, query.user, request, response, query.headers ? true : false);
     } else {
       //Send index
       response.writeHead(200);
-      fs.createReadStream(path.resolve("./views/index.html")).pipe(response);
+      return fs.createReadStream(path.resolve("./views/index.html")).pipe(response);
     }
-  }
-
-  if (request.method === "POST") {
-    shareSong(query.song, query.user, request, response);
   }
 };
 
