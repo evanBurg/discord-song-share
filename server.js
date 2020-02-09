@@ -131,7 +131,7 @@ const succeed = (response, message) => {
   fs.createReadStream(path.resolve("./views/success.html")).pipe(response);
 };
 
-const shareSong = async (song, user, request, response, headers) => {
+const shareSong = async (song, user, response, headers) => {
   if (song) {
     try {
       let message = await generateMessage(song, user);
@@ -180,11 +180,11 @@ const handleRequest = async (request, response) => {
 
       console.log(url);
 
-     return shareSong(url, undefined, request, response, false);
+     return shareSong(url, undefined, response, query.headers == 'true');
     }
 
     if (request.url.includes("?song=")) {
-      return shareSong(query.song, query.user, request, response, query.headers ? true : false);
+      return shareSong(query.song, query.user, response, query.headers == 'true');
     } else {
       //Send index
       response.writeHead(200);
