@@ -110,6 +110,7 @@ const generateMessage = async (song_link, requestee) => {
 };
 
 const fail = (response, status, error) => {
+  console.log("[ERROR]: ", response, status, error);
   response.writeHead(status, {
     "Content-Type": "text/html",
     "Share-Error": error
