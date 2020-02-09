@@ -136,12 +136,12 @@ const shareSong = async (song, user, response, headers) => {
     try {
       let message = await generateMessage(song, user);
       if (!headers) {
-        // let discord = await fetch(WEBHOOK_URL, {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify(message)
-        // });
-        if (false) {
+        let discord = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(message)
+        });
+        if (!discord.ok) {
           let error = discord.statusText;
           let body = await discord.text();
 
