@@ -177,7 +177,7 @@ const handleRequest = async (request, response) => {
         if (URL_REGEX.test(query[key])) url = query[key];
       }
 
-      shareSong(url, undefined, request, response);
+     return shareSong(url, undefined, request, response);
     }
 
     if (request.url.includes("?song=")) {
