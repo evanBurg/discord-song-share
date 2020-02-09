@@ -173,6 +173,7 @@ const handleRequest = async (request, response) => {
     if (request.url.includes("/share")) {
       let url = "";
       for (let key in query) {
+        console.log(query[key]);
         if (URL_REGEX.test(query[key])) url = query[key];
       }
 
