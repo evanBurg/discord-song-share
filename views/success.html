@@ -86,11 +86,19 @@
         .inputs {
           width: 65vw;
         }
+
+        .pure-button {
+          width: 57vw;
+        }
       }
 
       @media only screen and (max-width: 600px) {
         .inputs {
           width: 80vw;
+        }
+
+        .pure-button {
+          width: 72vw;
         }
       }
 
@@ -123,6 +131,13 @@
         text-align: center;
         text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.29);
         color: white;
+      }
+
+    #song-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
     </style>
     <link
@@ -161,7 +176,7 @@
 
   <script>
     const main = async () => {
-      let response = await fetch(document.location + '&headers=true');
+      let response = await fetch(document.location + "&headers=true");
       if (response.ok) {
         let song = {
           title: response.headers.get("Song-Title"),
