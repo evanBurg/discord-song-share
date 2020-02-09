@@ -2,9 +2,9 @@
   "name": "music-share-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "bot.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node bot.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

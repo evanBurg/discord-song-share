@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,700&display=swap");
+
+      body {
+        background: linear-gradient(34deg, #11998e, #38ef7d);
+        background-size: 400% 400%;
+        font-family: "Montserrat", sans-serif;
+        -webkit-animation: loginGradient 8s ease infinite;
+        -moz-animation: loginGradient 8s ease infinite;
+        animation: loginGradient 8s ease infinite;
+      }
+
+      @-webkit-keyframes loginGradient {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @-moz-keyframes loginGradient {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes loginGradient {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .success-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #song-container > img {
+        filter: brightness(0.5);
+      }
+
+      .inputs {
+        width: 48vw;
+      }
+
+      .pure-button {
+        width: 40vw;
+      }
+
+      @media only screen and (max-width: 900px) {
+        .inputs {
+          width: 65vw;
+        }
+      }
+
+      @media only screen and (max-width: 600px) {
+        .inputs {
+          width: 80vw;
+        }
+      }
+
+      .root {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .title {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 4rem;
+        margin: 0;
+        margin-bottom: 5px;
+        text-align: center;
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.29);
+        color: white;
+      }
+
+      .by {
+        font-size: 1.5rem;
+        font-weight: 300;
+        line-height: 2rem;
+        margin: 0;
+        text-align: center;
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.29);
+        color: white;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+      integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
+      crossorigin="anonymous"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" type="image/png" href="https://i.imgur.com/I9xBxse.jpg" />
+    <title>[SUCCESS] Discord Song Share</title>
+  </head>
+
+  <body>
+    <div class="root">
+      <div class="success-container">
+        <img
+          class="pure-img"
+          src="https://images.vexels.com/media/users/3/157931/isolated/preview/604a0cadf94914c7ee6c6e552e9b4487-curved-check-mark-circle-icon-by-vexels.png"
+          style="border-radius: 100%; width: 8rem;margin-bottom: -20px;filter: brightness(100);"
+        />
+        <h1 class="title">Song shared successfully!</h1>
+        <button
+        onclick="window.history.back()"
+        type="button"
+        class="inputs pure-button"
+      >
+        Go back
+      </button>
+      </div>
+      <div id="song-container"></div>
+    </div>
+  </body>
+
+  <script>
+    const main = async () => {
+      let response = await fetch(document.location);
+      if (response.ok) {
+        let song = {
+          title: response.headers.get("Song-Title"),
+          img: response.headers.get("Song-Image")
+        };
+
+        if (song.title && song.img) {
+          const container = document.getElementById("song-container");
+
+          const title = document.createElement("h2");
+          const text = document.createTextNode(song.title);
+          title.appendChild(text);
+          title.className = "by";
+          container.appendChild(title);
+
+          const image = document.createElement("img");
+          image.className = "inputs pure-img";
+          image.src = song.img;
+          container.appendChild(image);
+        }
+      }
+    };
+    main();
+  </script>
+</html>
