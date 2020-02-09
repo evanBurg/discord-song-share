@@ -197,7 +197,7 @@ const handleRequest = async (request, response) => {
 
 const server = http.createServer((request, response) => {
   var parts = url.parse(request.url);
-  if (parts.pathname === "/") {
+  if (parts.pathname === "/" || parts.pathname === "/share") {
     handleRequest(request, response);
   } else if (parts.pathname === "/manifest.json") {
     response.writeHead(200, { "Content-Type": "application/x-www-form-urlencoded"});
