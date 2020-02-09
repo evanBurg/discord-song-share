@@ -173,9 +173,7 @@ const handleRequest = async (request, response) => {
     if (request.url.includes("/share")) {
       let url = "";
       for (let key in query) {
-        if (query.hasOwnProperty(key)) {
-          if (URL_REGEX.test(query[key])) url = query[key];
-        }
+        if (URL_REGEX.test(query[key])) url = query[key];
       }
 
       shareSong(url, undefined, request, response);
