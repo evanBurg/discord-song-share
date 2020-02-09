@@ -4,9 +4,9 @@ const url = require("url");
 const querystring = require("querystring");
 const path = require("path");
 const fs = require("fs");
+const isUrl = require("is-url");
 
 //Variables
-const URL_REGEX = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
 const WEBHOOK_URL =
   process.env.WEBHOOK_URL ||
   "https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -174,8 +174,10 @@ const handleRequest = async (request, response) => {
       let url = "";
       for (let key in query) {
         console.log(key, query[key]);
-        if (URL_REGEX.test(query[key])) url = query[key];
+        if (isUrl(query[key])) url = query[key];
       }
+
+      console.log(url);
 
      return shareSong(url, undefined, request, response);
     }
