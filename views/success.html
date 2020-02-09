@@ -161,7 +161,7 @@
 
   <script>
     const main = async () => {
-      let response = await fetch(document.location);
+      let response = await fetch(document.location + '&headers=true');
       if (response.ok) {
         let song = {
           title: response.headers.get("Song-Title"),

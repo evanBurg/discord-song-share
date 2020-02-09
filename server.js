@@ -67,7 +67,8 @@ const generateMessage = async (song_link, requestee) => {
       {
         author: {
           name: `Shared by ${requestee}`,
-          icon_url: "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"
+          icon_url:
+            "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"
         },
         title: title,
         url: pageUrl,
@@ -106,15 +107,25 @@ const generateMessage = async (song_link, requestee) => {
 };
 
 const fail = (response, status, error) => {
-  response.writeHead(status, { "Content-Type": "text/html", "Share-Error": error });
+  response.writeHead(status, {
+    "Content-Type": "text/html",
+    "Share-Error": error
+  });
   fs.createReadStream(path.resolve("./views/error.html")).pipe(response);
 };
 
 const succeed = (response, message) => {
-  let song = { title: message.embeds[0].title, img: message.embeds[0].image.url }
-  response.writeHead(200, { "Content-Type": "text/html", "Song-Title": song.title, "Song-Image": song.img });
+  let song = {
+    title: message.embeds[0].title,
+    img: message.embeds[0].image.url
+  };
+  response.writeHead(200, {
+    "Content-Type": "text/html",
+    "Song-Title": song.title,
+    "Song-Image": song.img
+  });
   fs.createReadStream(path.resolve("./views/success.html")).pipe(response);
-}
+};
 
 const shareSong = async (request, response) => {
   const parsed = url.parse(request.url);
@@ -123,24 +134,25 @@ const shareSong = async (request, response) => {
   if (query.song) {
     try {
       let message = await generateMessage(query.song, query.user);
-      let discord = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(message)
-      });
-      if (!discord.ok) {
-        let error = discord.statusText;
-        let body = await discord.text();
+      if (!query.headers) {
+        let discord = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(message)
+        });
+        if (!discord.ok) {
+          let error = discord.statusText;
+          let body = await discord.text();
 
-        return fail(
-          response,
-          500,
-          `Error: Couldn't share song... ( ${error} )\n\n${body}`
-        );
+          return fail(
+            response,
+            500,
+            `Error: Couldn't share song... ( ${error} )\n\n${body}`
+          );
+        }
       }
-    
-      succeed(response, message);
 
+      succeed(response, message);
     } catch (e) {
       return fail(response, 400, `Error: Couldn't share song... ( ${e} )`);
     }
