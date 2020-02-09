@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 
 //Variables
+const URL_REGEX = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
 const WEBHOOK_URL =
   process.env.WEBHOOK_URL ||
   "https://discordapp.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -23,6 +24,8 @@ const generateMessage = async (song_link, requestee) => {
 
   //Cancel if not found
   if (!response.ok) return false;
+
+  if (!requestee) requestee = "Someone";
 
   //Extract data
   const results = await response.json();
@@ -127,13 +130,10 @@ const succeed = (response, message) => {
   fs.createReadStream(path.resolve("./views/success.html")).pipe(response);
 };
 
-const shareSong = async (request, response) => {
-  const parsed = url.parse(request.url);
-  const query = querystring.parse(parsed.query);
-
-  if (query.song) {
+const shareSong = async (song, user, request, response) => {
+  if (song) {
     try {
-      let message = await generateMessage(query.song, query.user);
+      let message = await generateMessage(song, user);
       if (!query.headers) {
         let discord = await fetch(WEBHOOK_URL, {
           method: "POST",
@@ -167,8 +167,22 @@ const shareSong = async (request, response) => {
 
 const handleRequest = async (request, response) => {
   if (request.method === "GET") {
+    const parsed = url.parse(request.url);
+    const query = querystring.parse(parsed.query);
+
+    if (request.url.includes("/share")) {
+      let url = "";
+      for (let key in query) {
+        if (query.hasOwnProperty(key)) {
+          if (URL_REGEX.test(query[key])) url = query[key];
+        }
+      }
+
+      shareSong(url, undefined, request, response);
+    }
+
     if (request.url.includes("?song=")) {
-      shareSong(request, response);
+      shareSong(query.song, query.user, request, response);
     } else {
       //Send index
       response.writeHead(200);
@@ -177,7 +191,7 @@ const handleRequest = async (request, response) => {
   }
 
   if (request.method === "POST") {
-    shareSong(request, response);
+    shareSong(query.song, query.user, request, response);
   }
 };
 
@@ -185,6 +199,15 @@ const server = http.createServer((request, response) => {
   var parts = url.parse(request.url);
   if (parts.pathname === "/") {
     handleRequest(request, response);
+  } else if (parts.pathname === "/manifest.json") {
+    response.writeHead(200, { "Content-Type": "application/x-www-form-urlencoded"});
+    fs.createReadStream(path.resolve("./views/manifest.json")).pipe(response);
+  } else if (parts.pathname === "/service-worker.js") {
+    response.writeHead(200, { "Content-Type": "application/javascript"});
+    fs.createReadStream(path.resolve("./views/service-worker.js")).pipe(response);
+  } else if (parts.pathname === "/icon.png") {
+    response.writeHead(200, { "Content-Type": "image/png"});
+    fs.createReadStream(path.resolve("./views/icon.png")).pipe(response);
   } else {
     response.writeHead(400, { "Content-Type": "text/plain" });
     response.end("Error: Unknown Path");
