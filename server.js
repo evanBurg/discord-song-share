@@ -32,11 +32,26 @@ const generateMessage = async (song_link, requestee) => {
   const entries = results.entitiesByUniqueId;
   let title = "";
   const pageUrl = results.pageUrl;
+
+  let spotifyURL, youtubeURL, appleURL, googleURL;
+  try {
+    spotifyURL = results.linksByPlatform.spotify.url;
+  } catch(e) {}
+  try {
+    youtubeURL = results.linksByPlatform.youtubeMusic.url;
+  } catch(e) {}
+  try {
+    appleURL = results.linksByPlatform.appleMusic.url;
+  } catch(e) {}
+  try {
+    googleURL = results.linksByPlatform.google.url;
+  } catch(e) {}
+
   const locations = {
-    spotify: results.linksByPlatform.spotify.url,
-    youtube: results.linksByPlatform.youtubeMusic.url,
-    apple: results.linksByPlatform.appleMusic.url,
-    google: results.linksByPlatform.google.url
+    spotify: spotifyURL,
+    youtube: youtubeURL,
+    apple: appleURL,
+    google: googleURL
   };
 
   let thumbnail = false;
@@ -78,12 +93,12 @@ const generateMessage = async (song_link, requestee) => {
         fields: [
           {
             name: "YouTube Music",
-            value: `[Link](${locations.youtube})`,
+            value: locations.youtube ? `[Link](${locations.youtube})` : 'Not Available',
             inline: true
           },
           {
             name: "Spotify",
-            value: `[Link](${locations.spotify})`,
+            value: locations.spotify ? `[Link](${locations.spotify})` : 'Not Available',
             inline: true
           },
           {
@@ -92,12 +107,12 @@ const generateMessage = async (song_link, requestee) => {
           },
           {
             name: "Apple Music",
-            value: `[Link](${locations.apple})`,
+            value: locations.apple ? `[Link](${locations.apple})` : 'Not Available',
             inline: true
           },
           {
             name: "Google Play Music",
-            value: `[Link](${locations.google})`,
+            value: locations.google ? `[Link](${locations.google})` : 'Not Available',
             inline: true
           }
         ],
