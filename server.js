@@ -33,7 +33,7 @@ const generateMessage = async (song_link, requestee) => {
   let title = "";
   const pageUrl = results.pageUrl;
 
-  let spotifyURL, youtubeURL, appleURL, googleURL;
+  let spotifyURL, youtubeURL, appleURL, soundcloudURL;
   try {
     spotifyURL = results.linksByPlatform.spotify.url;
   } catch(e) {}
@@ -44,14 +44,14 @@ const generateMessage = async (song_link, requestee) => {
     appleURL = results.linksByPlatform.appleMusic.url;
   } catch(e) {}
   try {
-    googleURL = results.linksByPlatform.google.url;
+    soundcloudURL = results.linksByPlatform.soundcloud.url;
   } catch(e) {}
 
   const locations = {
     spotify: spotifyURL,
     youtube: youtubeURL,
     apple: appleURL,
-    google: googleURL
+    soundcloud: soundcloudURL
   };
 
   let thumbnail = false;
@@ -102,8 +102,8 @@ const generateMessage = async (song_link, requestee) => {
             inline: true
           },
           {
-            name: "\u0000",
-            value: "\u0000"
+            name: "‎",
+            value: "‎"
           },
           {
             name: "Apple Music",
@@ -111,8 +111,8 @@ const generateMessage = async (song_link, requestee) => {
             inline: true
           },
           {
-            name: "Google Play Music",
-            value: locations.google ? `[Link](${locations.google})` : 'Not Available',
+            name: "Soundcloud",
+            value: locations.soundcloud ? `[Link](${locations.soundcloud})` : 'Not Available',
             inline: true
           }
         ],
